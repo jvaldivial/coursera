@@ -1,40 +1,63 @@
-# Sample Code for Machine Learning Course @ Coursera
+# Week2-ex1.R
 
 setwd("~/GitHub/coursera/MachineLearning")
-library(caret)
-library(kernlab)
-library(e1071)
-data("spam")
 
-# Subsetting the data set for Trainig and Testing
+library(caret)
+library(e1071)
+library(kernlab)
+data(spam)
+
+# Creating the data partitions for training & testing
 inTrain <- createDataPartition(y=spam$type, p=0.75, list = FALSE)
 training <- spam[inTrain, ]
 testing <- spam[-inTrain, ]
+dim(training)
 
-# Fitting a GLM model for the varable TYPE
+# Fitting the model
 set.seed(32343)
-modelFit <- train(type ~ . , data = training, method="glm" )
-modelFit
+modelFit <- train(type ~ . , data = training, method="glm")
 
-# Reviewing the output of the fitted model
+modelFit
 modelFit$finalModel
 
-# Predicting on the testing data set
+# Evaluating the model
 predictions <- predict(modelFit, newdata=testing)
 predictions
 
-# Assessing the model using the Confusion Matrix
 confusionMatrix(predictions, testing$type)
 
-# Doing Cross Validation
+
+#####
+# Data Slicing
+#####
+
+library(caret)
+library(e1071)
+library(kernlab)
+data(spam)
+
+inTrain <- createDataPartition(y=spam$ty, p=0.75, list = FALSE)
+training <- spam[inTrain, ]
+testing <- spam[-inTrain, ]
+dim(training)
+
 set.seed(32323)
 folds <- createFolds(y=spam$type, k=10, list = TRUE, returnTrain = TRUE)
 sapply(folds, length)
 
-# Creating Time Slices
+
+# -> With Resampling
+set.seed(32323)
+folds <- createResample(y=spam$type, times = 10, list = TRUE)
+sapply(folds,length)
+
+# -> Time Slices
 set.seed(32323)
 tme <- 1:1000
 folds <- createTimeSlices(y=tme, initialWindow = 20, horizon = 10)
 names(folds)
 folds$train[[1]]
 folds$test[[1]]
+
+
+
